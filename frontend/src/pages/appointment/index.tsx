@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useFrappeGetCall } from "frappe-react-sdk";
 
@@ -27,12 +27,9 @@ const Appointment = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const type = searchParams.get("type");
+  const email = searchParams.get("email");
+  const fullname = searchParams.get("fullname");
 
-  const updateTypeQuery = (type: string) => {
-    setSearchParams({ type });
-  };
-
-  const navigate = useNavigate();
   const {
     setMeetingId,
     setUserInfo,
@@ -42,6 +39,35 @@ const Appointment = () => {
     meetingDurationCards,
     setMeetingDurationCards,
   } = useAppContext();
+
+  // Lưu email và fullname vào state local khi chúng có trong URL
+  const [visitorEmail, setVisitorEmail] = useState<string | null>(null);
+  const [visitorName, setVisitorName] = useState<string | null>(null);
+
+  // Lưu thông tin khách từ URL vào state
+  useEffect(() => {
+    if (email) {
+      setVisitorEmail(email);
+    }
+    if (fullname) {
+      setVisitorName(fullname);
+    }
+  }, [email, fullname]);
+
+  // Sử dụng thông tin khách trong quá trình đặt lịch hẹn
+  useEffect(() => {
+    // Chỉ thực hiện khi đã chọn type (đã chuyển sang màn hình đặt lịch)
+    if (type && visitorEmail && visitorName) {
+      console.log("Sử dụng thông tin khách:", visitorEmail, visitorName);
+      // Có thể truyền thông tin này vào component Booking hoặc sử dụng trong API calls sau này
+    }
+  }, [type, visitorEmail, visitorName]);
+
+  const updateTypeQuery = (type: string) => {
+    setSearchParams({ type });
+  };
+
+  const navigate = useNavigate();
 
   const { data, isLoading, error } = useFrappeGetCall(
     "frappe_appointment.api.personal_meet.get_meeting_windows",
@@ -186,7 +212,7 @@ const Appointment = () => {
           </div>
         </div>
       ) : (
-        <Booking type={type} banner={userInfo.banner_image} />
+        <Booking type={type} banner={userInfo.banner_image} visitorEmail={visitorEmail} visitorName={visitorName} />
       )}
       <PoweredBy />
     </>

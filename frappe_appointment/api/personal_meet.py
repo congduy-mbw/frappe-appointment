@@ -272,7 +272,7 @@ def get_all_timezones():
 
 
 @frappe.whitelist()
-def get_schedular_link(user):
+def get_schedular_link(user, email_candidate: str = None, fullname_candidate: str = None):
     user_availability = frappe.get_all(
         "User Appointment Availability", filters={"user": user, "enable_scheduling": 1}, fields=["*"]
     )
@@ -288,6 +288,12 @@ def get_schedular_link(user):
     )
 
     url = frappe.utils.get_url("/schedule/in/{0}".format(user_availability.get("slug")))
+    if email_candidate is not None and fullname_candidate is not None:
+        url = f"{url}?email={email_candidate}&fullname={fullname_candidate}"
+    elif email_candidate is not None and fullname_candidate is None:
+        url = f"{url}?email={email_candidate}"
+    elif email_candidate is None and fullname_candidate is not None:
+        url = f"{url}?fullname={fullname_candidate}"
 
     return {
         "url": url,

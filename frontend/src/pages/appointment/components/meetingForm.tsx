@@ -1,7 +1,7 @@
 /**
  * External dependencies.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import z from "zod";
@@ -47,6 +47,8 @@ interface MeetingFormProps {
   onSuccess: (data: any) => void;
   durationId: string;
   isMobileView: boolean;
+  visitorEmail?: string | null;
+  visitorName?: string | null;
 }
 
 const MeetingForm = ({
@@ -54,6 +56,8 @@ const MeetingForm = ({
   durationId,
   onSuccess,
   isMobileView,
+  visitorEmail,
+  visitorName,
 }: MeetingFormProps) => {
   const [isGuestsOpen, setIsGuestsOpen] = useState(false);
   const [guestInput, setGuestInput] = useState("");
@@ -67,11 +71,21 @@ const MeetingForm = ({
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
+      fullName: visitorName || "",
+      email: visitorEmail || "",
       guests: [],
     },
   });
+
+  // Cập nhật giá trị form khi props thay đổi
+  useEffect(() => {
+    if (visitorName) {
+      form.setValue("fullName", visitorName);
+    }
+    if (visitorEmail) {
+      form.setValue("email", visitorEmail);
+    }
+  }, [visitorName, visitorEmail, form]);
 
   const handleGuestKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {

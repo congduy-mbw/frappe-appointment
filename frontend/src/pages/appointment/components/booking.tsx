@@ -48,9 +48,11 @@ import { useBookingReducer } from "../reducer";
 interface BookingProp {
   type: string;
   banner: string;
+  visitorEmail?: string | null;
+  visitorName?: string | null;
 }
 
-const Booking = ({ type, banner }: BookingProp) => {
+const Booking = ({ type, banner, visitorEmail, visitorName }: BookingProp) => {
   const {
     userInfo,
     timeZone,
@@ -82,16 +84,6 @@ const Booking = ({ type, banner }: BookingProp) => {
       setSelectedDate(parseDateString(date));
     }
   }, [date]);
-
-  const updateDateQuery = (date: Date) => {
-    const queries: Record<string, string> = {};
-    searchParams.forEach((value, key) => (queries[key] = value));
-    setSearchParams({
-      ...queries,
-      date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
-      type,
-    });
-  };
 
   const navigate = useNavigate();
   const { data, isLoading, error, mutate } = useFrappeGetCall(
@@ -171,11 +163,11 @@ const Booking = ({ type, banner }: BookingProp) => {
       setDuration(convertToMinutes(data?.message?.duration));
       const validData = data.message.is_invalid_date
         ? new Date(data.message.next_valid_date)
-        : selectedDate;
-      setSelectedDate(validData);
-      updateDateQuery(validData);
-      dispatch({ type: "SET_DISPLAY_MONTH", payload: validData });
-    }
+                  : selectedDate;
+        setSelectedDate(validData);
+        updateDateQuery(validData);
+        dispatch({ type: "SET_DISPLAY_MONTH", payload: validData });
+      }
     if (error) {
       const err = parseFrappeErrorMsg(error);
       toast(err || "Something went wrong", {
@@ -217,6 +209,16 @@ const Booking = ({ type, banner }: BookingProp) => {
       containerRef.current.style.width = "100%";
     }
   }, [state.isMobileView]);
+
+  const updateDateQuery = (date: Date) => {
+    const queries: Record<string, string> = {};
+    searchParams.forEach((value, key) => (queries[key] = value));
+    setSearchParams({
+      ...queries,
+      date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
+      type,
+    });
+  };
 
   return (
     <>
@@ -348,13 +350,13 @@ const Booking = ({ type, banner }: BookingProp) => {
                               available_days: state.meetingData.available_days,
                             }}
                             setSelectedDate={setSelectedDate}
-                            onDayClick={(date) => {
-                              setSelectedDate(date);
-                              updateDateQuery(date);
-                              dispatch({
-                                type: "SET_DISPLAY_MONTH",
-                                payload: date,
-                              });
+                                                          onDayClick={(date) => {
+                                setSelectedDate(date);
+                                updateDateQuery(date);
+                                dispatch({
+                                  type: "SET_DISPLAY_MONTH",
+                                  payload: date,
+                                });
                               dispatch({
                                 type: "SET_EXPANDED",
                                 payload: true,
@@ -548,6 +550,8 @@ const Booking = ({ type, banner }: BookingProp) => {
                       }}
                       durationId={type}
                       isMobileView={state.isMobileView}
+                      visitorEmail={visitorEmail}
+                      visitorName={visitorName}
                     />
                   )}
                 </AnimatePresence>

@@ -38,9 +38,11 @@ class UserAppointmentAvailability(Document):
                         )
                     )
                 weekdays.append(slot.day)
-        calendar = frappe.get_doc("Google Calendar", self.google_calendar)
-        if not calendar.custom_is_google_calendar_authorized:
-            frappe.throw(frappe._("Please authorize Google Calendar before creating appointment availability."))
+        if frappe.db.get_single_value("Integration Third Platform", "async_google_calendar") == 1:
+            calendar = frappe.get_doc("Google Calendar", self.google_calendar)
+            if not calendar.custom_is_google_calendar_authorized:
+                frappe.throw(frappe._("Please authorize Google Calendar before creating appointment availability."))
+        
         if self.enable_scheduling and not self.slug:
             frappe.throw(frappe._("Please set a slug before enabling scheduling."))
         if self.slug:

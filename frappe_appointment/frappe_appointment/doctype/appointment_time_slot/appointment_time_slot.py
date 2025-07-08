@@ -46,6 +46,9 @@ def get_all_unavailable_google_calendar_slots_for_day(
     list: List of all google time slots of members
     """
     cal_slots = []
+    
+    if frappe.db.get_single_value("Integration Third Platform", "async_google_calendar") == 0:
+        return cal_slots
 
     for member in member_time_slots:
         google_calendar_slots = get_google_calendar_slots_member(member, starttime, endtime, date, appointment_group)
