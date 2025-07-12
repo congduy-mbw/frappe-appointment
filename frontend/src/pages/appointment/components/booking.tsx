@@ -50,9 +50,10 @@ interface BookingProp {
   banner: string;
   visitorEmail?: string | null;
   visitorName?: string | null;
+  taskId?: string | null;
 }
 
-const Booking = ({ type, banner, visitorEmail, visitorName }: BookingProp) => {
+const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingProp) => {
   const {
     userInfo,
     timeZone,
@@ -552,9 +553,13 @@ const Booking = ({ type, banner, visitorEmail, visitorName }: BookingProp) => {
                       isMobileView={state.isMobileView}
                       visitorEmail={visitorEmail}
                       visitorName={visitorName}
+                      taskId={taskId}
                     />
                   )}
                 </AnimatePresence>
+                <div className="mt-5">
+                  {taskId}
+                </div>
               </div>
             </div>
           </div>

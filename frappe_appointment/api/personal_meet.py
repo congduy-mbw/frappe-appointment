@@ -151,6 +151,7 @@ def book_time_slot(
     user_name: str,
     user_email: str,
     other_participants: str = None,
+    task_id: str = None,
     **args,
 ):
     duration = frappe.get_doc("Appointment Slot Duration", duration_id)
@@ -235,6 +236,7 @@ def book_time_slot(
         json.dumps(event_participants),
         success_message=success_message,
         return_event_id=True,
+        task_id=task_id,
         **args,
     )
 
@@ -272,7 +274,7 @@ def get_all_timezones():
 
 
 @frappe.whitelist()
-def get_schedular_link(user, email_candidate: str = None, fullname_candidate: str = None):
+def get_schedular_link(user, email_candidate: str = None, fullname_candidate: str = None, task_id: str = None):
     user_availability = frappe.get_all(
         "User Appointment Availability", filters={"user": user, "enable_scheduling": 1}, fields=["*"]
     )
@@ -288,12 +290,16 @@ def get_schedular_link(user, email_candidate: str = None, fullname_candidate: st
     )
 
     url = frappe.utils.get_url("/schedule/in/{0}".format(user_availability.get("slug")))
-    if email_candidate is not None and fullname_candidate is not None:
-        url = f"{url}?email={email_candidate}&fullname={fullname_candidate}"
-    elif email_candidate is not None and fullname_candidate is None:
-        url = f"{url}?email={email_candidate}"
-    elif email_candidate is None and fullname_candidate is not None:
-        url = f"{url}?fullname={fullname_candidate}"
+    query_params = []
+    if email_candidate is not None:
+        query_params.append(f"email={email_candidate}")
+    if fullname_candidate is not None:
+        query_params.append(f"fullname={fullname_candidate}")
+    if task_id is not None:
+        query_params.append(f"task_id={task_id}")
+    
+    if query_params:
+        url = f"{url}?{'&'.join(query_params)}"
 
     return {
         "url": url,
@@ -304,7 +310,7 @@ def get_schedular_link(user, email_candidate: str = None, fullname_candidate: st
                 "label": duration.title,
                 "duration": duration.duration,
                 "duration_str": duration_to_string(duration.duration),
-                "url": url + "?type=" + duration.name,
+                "url": f"{url}&type={duration.name}" if len(query_params) > 0 else f"{url}?type={duration.name}"
             }
             for duration in all_durations
         ],

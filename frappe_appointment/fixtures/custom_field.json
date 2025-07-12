@@ -910,5 +910,18 @@
   "translatable": 0,
   "unique": 0,
   "width": null
- }
+ },
+ {
+    "doctype": "Custom Field",
+    "dt": "Event",
+    "module": "Frappe Appointment",
+    "name": "Event-custom_mia",
+    "fieldname": "custom_mia",
+    "fieldtype": "Code",
+    "label": "Custom Mia",
+    "options": "JSON",
+    "read_only": 0,
+    "reqd": 0,
+    "in_list_view": 0
+  }
 ]

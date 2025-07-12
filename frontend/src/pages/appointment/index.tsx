@@ -29,6 +29,7 @@ const Appointment = () => {
   const type = searchParams.get("type");
   const email = searchParams.get("email");
   const fullname = searchParams.get("fullname");
+  const task_id = searchParams.get("taskId");
 
   const {
     setMeetingId,
@@ -43,6 +44,7 @@ const Appointment = () => {
   // Lưu email và fullname vào state local khi chúng có trong URL
   const [visitorEmail, setVisitorEmail] = useState<string | null>(null);
   const [visitorName, setVisitorName] = useState<string | null>(null);
+  const [taskId, setTaskId] = useState<string | null>(null);
 
   // Lưu thông tin khách từ URL vào state
   useEffect(() => {
@@ -52,7 +54,11 @@ const Appointment = () => {
     if (fullname) {
       setVisitorName(fullname);
     }
-  }, [email, fullname]);
+    console.log("Dòng 57 ", task_id)
+    if(task_id){
+      setTaskId(task_id);
+    }
+  }, [email, fullname, task_id]);
 
   // Sử dụng thông tin khách trong quá trình đặt lịch hẹn
   useEffect(() => {
@@ -212,7 +218,7 @@ const Appointment = () => {
           </div>
         </div>
       ) : (
-        <Booking type={type} banner={userInfo.banner_image} visitorEmail={visitorEmail} visitorName={visitorName} />
+        <Booking type={type} banner={userInfo.banner_image} visitorEmail={visitorEmail} visitorName={visitorName} taskId={taskId} />
       )}
       <PoweredBy />
     </>
