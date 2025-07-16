@@ -29,7 +29,7 @@ const Appointment = () => {
   const type = searchParams.get("type");
   const email = searchParams.get("email");
   const fullname = searchParams.get("fullname");
-  const task_id = searchParams.get("taskId");
+  const task_id = searchParams.get("taskId") || searchParams.get("task_id") || searchParams.get("taskid");
 
   const {
     setMeetingId,
@@ -54,7 +54,6 @@ const Appointment = () => {
     if (fullname) {
       setVisitorName(fullname);
     }
-    console.log("Dòng 57 ", task_id)
     if(task_id){
       setTaskId(task_id);
     }

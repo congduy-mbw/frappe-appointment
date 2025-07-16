@@ -66,6 +66,8 @@ const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingPro
     setSelectedSlot,
     meetingId,
   } = useAppContext();
+  
+  
   const [state, dispatch] = useBookingReducer();
   const containerRef = useRef<HTMLDivElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
