@@ -276,7 +276,7 @@ def get_all_timezones():
 @frappe.whitelist()
 def get_schedular_link(user, email_candidate: str = None, fullname_candidate: str = None, task_id: str = None):
     user_availability = frappe.get_all(
-        "User Appointment Availability", filters={"user": user, "enable_scheduling": 1}, fields=["*"]
+        "User Appointment Availability", filters={"name": user, "enable_scheduling": 1}, fields=["*"]
     )
     if not user_availability:
         return {"error": "No user found"}, 404
