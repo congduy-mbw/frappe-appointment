@@ -624,7 +624,7 @@ def _create_event_for_appointment_group(
         "event_type": "Private",
         "custom_appointment_group": appointment_group.name,
         "event_info": event_info,
-        "custom_mia": json.dumps({"task_id": task_id}) if task_id else None,
+        "custom_field": json.dumps({"task_id": task_id}) if task_id else None,
     }
 
     if personal:
