@@ -9,7 +9,7 @@ from frappe_appointment.frappe_appointment.doctype.appointment_group.appointment
 from frappe_appointment.helpers.overrides import add_response_code
 from frappe_appointment.helpers.utils import duration_to_string
 from frappe_appointment.overrides.event_override import _create_event_for_appointment_group
-
+from frappe_appointment.constants import IS_DEVELOPMENT_ENVIROMENT
 
 @frappe.whitelist(allow_guest=True)
 @add_response_code
@@ -292,6 +292,12 @@ def get_schedular_link(user, email_candidate: str = None, fullname_candidate: st
     )
 
     url = frappe.utils.get_url("/schedule/in/{0}".format(user_availability.get("slug")))
+    if IS_DEVELOPMENT_ENVIROMENT:
+        config_site = frappe.get_conf()
+        host_hireos = config_site.get("host_hireos")
+        slug = user_availability.get("slug")
+        url = f"{host_hireos}/schedule/in/{slug}"
+    
     query_params = []
     if email_candidate is not None:
         query_params.append(f"email={email_candidate}")
