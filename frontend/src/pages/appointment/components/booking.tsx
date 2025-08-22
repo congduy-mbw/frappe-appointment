@@ -51,9 +51,10 @@ interface BookingProp {
   visitorEmail?: string | null;
   visitorName?: string | null;
   taskId?: string | null;
+  typeApp?: string | null;
 }
 
-const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingProp) => {
+const Booking = ({ type, banner, visitorEmail, visitorName, taskId, typeApp }: BookingProp) => {
   const {
     userInfo,
     timeZone,
@@ -170,6 +171,19 @@ const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingPro
         setSelectedDate(validData);
         updateDateQuery(validData);
         dispatch({ type: "SET_DISPLAY_MONTH", payload: validData });
+        
+        // Nếu type_app là mbw_mia hoặc mbw_avi thì tự động chọn slot đầu tiên và hiển thị form
+        if ((typeApp === "mbw_mia" || typeApp === "mbw_avi") && 
+            data.message.all_available_slots_for_data && 
+            data.message.all_available_slots_for_data.length > 0) {
+          const firstSlot = data.message.all_available_slots_for_data[0];
+          setSelectedSlot({
+            start_time: firstSlot.start_time,
+            end_time: firstSlot.end_time,
+          });
+          console.log(typeApp);
+          //dispatch({ type: "SET_SHOW_MEETING_FORM", payload: true });
+        }
       }
     if (error) {
       const err = parseFrappeErrorMsg(error);
@@ -186,7 +200,7 @@ const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingPro
         },
       });
     }
-  }, [data, error, type, navigate, setDuration, dispatch, mutate]);
+  }, [data, error, type, navigate, setDuration, dispatch, mutate, typeApp, setSelectedSlot]);
 
   const formatTimeSlot = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -261,12 +275,18 @@ const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingPro
               {/* Profile */}
               <div className="max-lg:w-full md:min-w-sm md:max-w-sm flex flex-col gap-4 md:p-6 md:px-4">
                 <div className="w-full flex flex-col gap-1">
-                  <Typography variant="h2" className="text-3xl font-semibold">
-                    <Tooltip>
-                      <TooltipTrigger className="w-full truncate text-left">
-                        {userInfo.name}
+                                      <Typography variant="h2" className="text-3xl font-semibold">
+                      <Tooltip>
+                        <TooltipTrigger className="w-full truncate text-left">
+                        {typeApp === "mbw_mia" ? "MBW Mia" : 
+                         typeApp === "mbw_avi" ? "MBW Avi" : 
+                         userInfo.name}
                       </TooltipTrigger>
-                      <TooltipContent>{userInfo.name}</TooltipContent>
+                      <TooltipContent>
+                        {typeApp === "mbw_mia" ? "MBW Mia" : 
+                         typeApp === "mbw_avi" ? "MBW Avi" : 
+                         userInfo.name}
+                      </TooltipContent>
                     </Tooltip>
                   </Typography>
                   {userInfo.designation && userInfo.organizationName && (
@@ -306,13 +326,7 @@ const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingPro
                       Google Meet
                     </Typography>
                   )}
-                  <Typography
-                    className="hidden md:flex text-blue-600 dark:text-blue-400 mt-1 items-center hover:underline cursor-pointer"
-                    onClick={() => navigate(`/in/${meetingId}`)}
-                  >
-                    <Home className="inline-block w-4 h-4 mr-1" />
-                    Home
-                  </Typography>
+                  
                 </div>
               </div>
               <div className="max-lg:w-full shrink-0 lg:max-h-[31rem] md:overflow-hidden">
@@ -556,6 +570,7 @@ const Booking = ({ type, banner, visitorEmail, visitorName, taskId }: BookingPro
                       visitorEmail={visitorEmail}
                       visitorName={visitorName}
                       taskId={taskId}
+                      typeApp={typeApp}
                     />
                   )}
                 </AnimatePresence>

@@ -122,16 +122,18 @@ def get_user_time_slots(all_time_slots_global_object: list, date: str, user_time
     list_all_available_slots_for_data = []
 
     today = int(date.split("-")[2])
-
     for day in all_time_slots_global_object:
         day_slots_object = all_time_slots_global_object[day]
         all_available_slots_for_data = day_slots_object["all_available_slots_for_data"]
 
         for time_slot in all_available_slots_for_data:
             user_timezone_start_time_slot = utc_to_given_time_zone(time_slot["start_time"], user_timezone_offset)
+            print("Dòng 132: ", user_timezone_start_time_slot)
+            print("Dòng 133: ", today)
             if user_timezone_start_time_slot.day == today:
                 list_all_available_slots_for_data.append(time_slot)
 
+    print("Dòng 135 ", list_all_available_slots_for_data)
     return list_all_available_slots_for_data
 
 

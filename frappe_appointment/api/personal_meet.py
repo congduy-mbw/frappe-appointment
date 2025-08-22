@@ -152,6 +152,7 @@ def book_time_slot(
     user_email: str,
     other_participants: str = None,
     task_id: str = None,
+    type_app: str = None,
     **args,
 ):
     duration = frappe.get_doc("Appointment Slot Duration", duration_id)
@@ -237,6 +238,7 @@ def book_time_slot(
         success_message=success_message,
         return_event_id=True,
         task_id=task_id,
+        type_app=type_app,
         **args,
     )
 
@@ -274,7 +276,7 @@ def get_all_timezones():
 
 
 @frappe.whitelist()
-def get_schedular_link(user, email_candidate: str = None, fullname_candidate: str = None, task_id: str = None):
+def get_schedular_link(user, email_candidate: str = None, fullname_candidate: str = None, task_id: str = None, type_app: str = None):
     user_availability = frappe.get_all(
         "User Appointment Availability", filters={"name": user, "enable_scheduling": 1}, fields=["*"]
     )
@@ -297,7 +299,8 @@ def get_schedular_link(user, email_candidate: str = None, fullname_candidate: st
         query_params.append(f"fullname={fullname_candidate}")
     if task_id is not None:
         query_params.append(f"task_id={task_id}")
-    
+    if type_app is not None:
+        query_params.append(f"type_app={type_app}")
     if query_params:
         url = f"{url}?{'&'.join(query_params)}"
 

@@ -63,5 +63,5 @@ def get_user_appointment_availability(candidate_email, app_type="Avi"):
     except Exception as e:
         frappe.throw(str(e))
 
-def get_schedular_link_by_name(name, email_candidate: str = None, fullname_candidate: str = None, task_id: str = None):
-    return get_schedular_link(name, email_candidate, fullname_candidate, task_id)
+def get_schedular_link_by_name(name, email_candidate: str = None, fullname_candidate: str = None, task_id: str = None, type_app: str = None):
+    return get_schedular_link(name, email_candidate, fullname_candidate, task_id, type_app)

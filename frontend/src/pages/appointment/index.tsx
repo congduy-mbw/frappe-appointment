@@ -30,6 +30,7 @@ const Appointment = () => {
   const email = searchParams.get("email");
   const fullname = searchParams.get("fullname");
   const task_id = searchParams.get("taskId") || searchParams.get("task_id") || searchParams.get("taskid");
+  const type_app = searchParams.get("type_app") || searchParams.get("typeApp");
 
   const {
     setMeetingId,
@@ -45,6 +46,7 @@ const Appointment = () => {
   const [visitorEmail, setVisitorEmail] = useState<string | null>(null);
   const [visitorName, setVisitorName] = useState<string | null>(null);
   const [taskId, setTaskId] = useState<string | null>(null);
+  const [typeApp, setTypeApp] = useState<string | null>(null);
 
   // Lưu thông tin khách từ URL vào state
   useEffect(() => {
@@ -57,13 +59,15 @@ const Appointment = () => {
     if(task_id){
       setTaskId(task_id);
     }
-  }, [email, fullname, task_id]);
+    if(type_app){
+      setTypeApp(type_app);
+    }
+  }, [email, fullname, task_id, type_app]);
 
   // Sử dụng thông tin khách trong quá trình đặt lịch hẹn
   useEffect(() => {
     // Chỉ thực hiện khi đã chọn type (đã chuyển sang màn hình đặt lịch)
     if (type && visitorEmail && visitorName) {
-      console.log("Sử dụng thông tin khách:", visitorEmail, visitorName);
       // Có thể truyền thông tin này vào component Booking hoặc sử dụng trong API calls sau này
     }
   }, [type, visitorEmail, visitorName]);
@@ -96,6 +100,7 @@ const Appointment = () => {
 
   useEffect(() => {
     if (data) {
+      console.log(data)
       setUserInfo({
         name: data?.message?.full_name,
         designation: data?.message?.position,
@@ -106,11 +111,22 @@ const Appointment = () => {
         banner_image: data?.message?.banner_image,
       });
       setMeetingDurationCards(data?.message?.durations);
+      
+      // Nếu typeApp là mbw_mia hoặc mbw_avi thì tự động chọn meeting card đầu tiên và vào booking
+      // Chỉ thực hiện khi chưa có type để tránh vòng lặp vô tận
+      if ((typeApp === "mbw_mia" || typeApp === "mbw_avi") && 
+          !type && 
+          data?.message?.durations && 
+          data?.message?.durations.length > 0) {
+        const firstCard = data.message.durations[0];
+        setDuration(firstCard.duration / 60);
+        updateTypeQuery(firstCard.id);
+      }
     }
     if (error) {
       navigate("/");
     }
-  }, [data, error]);
+  }, [data, error, typeApp, type]);
 
   return (
     <>
@@ -118,7 +134,7 @@ const Appointment = () => {
         title={userInfo.name ? `${userInfo.name} | Appointment` : "Appointment"}
         description={`Book appointment with ${userInfo.name}`}
       />
-      {!type || isLoading ? (
+      {!type || !typeApp || isLoading ? (
         <div className="w-full h-full max-md:h-fit flex justify-center">
           <div className="container max-w-[74rem] mx-auto md:p-4 md:py-8 lg:py-16 grid md:gap-12">
             <div className="grid lg:grid-cols-[360px,1fr] md:gap-8 max-md:gap-10  items-start relative rounded-lg">
@@ -217,7 +233,7 @@ const Appointment = () => {
           </div>
         </div>
       ) : (
-        <Booking type={type} banner={userInfo.banner_image} visitorEmail={visitorEmail} visitorName={visitorName} taskId={taskId} />
+        <Booking type={type || ""} banner={userInfo.banner_image} visitorEmail={visitorEmail} visitorName={visitorName} taskId={taskId} typeApp={typeApp} />
       )}
       <PoweredBy />
     </>

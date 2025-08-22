@@ -49,7 +49,8 @@ interface MeetingFormProps {
   isMobileView: boolean;
   visitorEmail?: string | null;
   visitorName?: string | null;
-  taskId?: string | null
+  taskId?: string | null;
+  typeApp?: string | null;
 }
 
 const MeetingForm = ({
@@ -59,7 +60,8 @@ const MeetingForm = ({
   isMobileView,
   visitorEmail,
   visitorName,
-  taskId
+  taskId,
+  typeApp
 }: MeetingFormProps) => {
 
   const [isGuestsOpen, setIsGuestsOpen] = useState(false);
@@ -134,7 +136,8 @@ const MeetingForm = ({
       user_name: data.fullName,
       user_email: data.email,
       other_participants: data.guests.join(", "),
-      task_id: taskId
+      task_id: taskId,
+      type_app: typeApp
     };
     
     bookMeeting(meetingData)
