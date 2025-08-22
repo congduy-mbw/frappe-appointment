@@ -1,13 +1,13 @@
 /**
  * External dependencies.
  */
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import z from "zod";
 import { useFrappePostCall } from "frappe-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarPlus, ChevronLeft, CircleAlert, X } from "lucide-react";
+import { CalendarPlus, ChevronLeft, CircleAlert} from "lucide-react";
 import { formatDate } from "date-fns";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
@@ -64,8 +64,8 @@ const MeetingForm = ({
   typeApp
 }: MeetingFormProps) => {
 
-  const [isGuestsOpen, setIsGuestsOpen] = useState(false);
-  const [guestInput, setGuestInput] = useState("");
+  //const [isGuestsOpen, setIsGuestsOpen] = useState(false);
+  //const [guestInput, setGuestInput] = useState("");
   const { call: bookMeeting, loading } = useFrappePostCall(
     `frappe_appointment.api.personal_meet.book_time_slot`
   );
@@ -92,7 +92,7 @@ const MeetingForm = ({
     }
   }, [visitorName, visitorEmail, form]);
 
-  const handleGuestKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  /*const handleGuestKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
       addGuest();
@@ -116,7 +116,7 @@ const MeetingForm = ({
       "guests",
       currentGuests.filter((guest) => guest !== email)
     );
-  };
+  };*/
   const onSubmit = (data: ContactFormValues) => {
     const extraArgs: Record<string, string> = {};
     searchParams.forEach((value, key) => (extraArgs[key] = value));
@@ -202,6 +202,7 @@ const MeetingForm = ({
                   <FormControl>
                     <Input
                       disabled={loading}
+                      readOnly
                       className={`active:ring-blue-400 focus-visible:ring-blue-400 ${
                         form.formState.errors.fullName
                           ? "active:ring-red-500 focus-visible:ring-red-500"
@@ -236,6 +237,7 @@ const MeetingForm = ({
                   <FormControl>
                     <Input
                       disabled={loading}
+                      readOnly
                       className={`active:ring-blue-400 focus-visible:ring-blue-400 ${
                         form.formState.errors.email
                           ? "active:ring-red-500 focus-visible:ring-red-500"
@@ -253,7 +255,7 @@ const MeetingForm = ({
                 </FormItem>
               )}
             />
-
+            {/*
             <div className="space-y-2">
               <Button
                 type="button"
@@ -295,7 +297,7 @@ const MeetingForm = ({
                   </div>
                 </div>
               )}
-            </div>
+            </div>*/}
           </div>
 
           <div className="flex justify-between md:pt-4 max-md:h-14 max-md:fixed max-md:bottom-0 max-md:left-0 max-md:w-screen max-md:border max-md:z-10 max-md:bg-background max-md:border-top max-md:items-center max-md:px-4">
