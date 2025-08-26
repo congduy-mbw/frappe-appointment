@@ -103,9 +103,8 @@
   },
   {
    "fieldname": "app_type",
-   "fieldtype": "Select",
-   "label": "Type App",
-   "options": "Mia\nAvi"
+   "fieldtype": "Data",
+   "label": "Type App"
   }
  ],
  "index_web_pages_for_search": 1,
