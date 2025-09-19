@@ -53,13 +53,12 @@ EMAIL_TEMPLATES = [
 
 
 def import_email_templates():
-    # for email_template in EMAIL_TEMPLATES:
-    #     try:
-    #         frappe.get_doc(email_template).insert(ignore_permissions=True)
-    #     except frappe.DuplicateEntryError:
-    #         pass  # Do not update existing templates
-    #     except Exception as e:
-    #         print(f"Error importing email template {email_template['name']}: {e}")
-    #         continue
-    # print("Email Templates Imported")
-    pass
+    for email_template in EMAIL_TEMPLATES:
+        try:
+            frappe.get_doc(email_template).insert(ignore_permissions=True)
+        except frappe.DuplicateEntryError:
+            pass  # Do not update existing templates
+        except Exception as e:
+            print(f"Error importing email template {email_template['name']}: {e}")
+            continue
+    print("Email Templates Imported")
