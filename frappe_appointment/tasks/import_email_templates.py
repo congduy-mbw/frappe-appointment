@@ -53,12 +53,37 @@ EMAIL_TEMPLATES = [
 
 
 def import_email_templates():
+    """
+    Import default email templates for Appointment Group
+    and link them to Appointment Settings after creation.
+    """
     for email_template in EMAIL_TEMPLATES:
         try:
             frappe.get_doc(email_template).insert(ignore_permissions=True)
         except frappe.DuplicateEntryError:
-            pass  # Do not update existing templates
+            pass  # Template already exists
         except Exception as e:
-            print(f"Error importing email template {email_template['name']}: {e}")
+            print(f"⚠️ Error importing email template {email_template.get('name')}: {e}")
             continue
-    print("Email Templates Imported")
+
+    print("✅ Email Templates Imported")
+
+    # --- Link to Appointment Settings if available ---
+    if frappe.db.exists("DocType", "Appointment Settings"):
+        try:
+            settings = frappe.get_single("Appointment Settings")
+            if frappe.db.exists("Email Template", "[Default] Appointment Scheduled"):
+                settings.default_personal_email_template = "[Default] Appointment Scheduled"
+                settings.default_group_email_template = "[Default] Appointment Scheduled"
+            if frappe.db.exists("Email Template", "[Default] Appointment Group Availability"):
+                settings.default_availability_alerts_email_template = "[Default] Appointment Group Availability"
+            if frappe.db.exists("Email Template", "[Default] Appointment Scheduled - Organisers"):
+                settings.personal_organisers_email_template = "[Default] Appointment Scheduled - Organisers"
+
+            settings.save(ignore_permissions=True)
+            frappe.db.commit()
+            print("✅ Default templates linked to Appointment Settings")
+        except Exception as e:
+            print(f"⚠️ Could not link templates to Appointment Settings: {e}")
+    else:
+        print("ℹ️ Appointment Settings DocType not found; skipping linking.")
