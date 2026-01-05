@@ -292,12 +292,7 @@ def get_schedular_link(user, email_candidate: str = None, fullname_candidate: st
     )
 
     url = frappe.utils.get_url("/schedule/in/{0}".format(user_availability.get("slug")))
-    if IS_DEVELOPMENT_ENVIROMENT:
-        config_site = frappe.get_conf()
-        host_hireos = config_site.get("host_hireos")
-        slug = user_availability.get("slug")
-        url = f"{host_hireos}/schedule/in/{slug}"
-    
+
     query_params = []
     if email_candidate is not None:
         query_params.append(f"email={email_candidate}")

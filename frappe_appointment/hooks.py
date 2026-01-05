@@ -23,7 +23,10 @@ app_include_js = [
     "/assets/frappe_appointment/js/duration_override.js",
 ]
 
-after_install = "frappe_appointment.tasks.import_email_templates.import_email_templates"
+after_install = [
+    "frappe_appointment.tasks.import_email_templates.import_email_templates",
+    "frappe_appointment.tasks.setup_default_availability.setup_default_user_availability",
+]
 
 after_sync = [
     "frappe_appointment.tasks.setup_erpnext_fields.setup_erpnext_fields",
