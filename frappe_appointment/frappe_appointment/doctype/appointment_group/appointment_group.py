@@ -113,9 +113,24 @@ def _get_time_slots_for_day(
     except GoogleBadRequest as e:
         frappe.log_error(e)
         frappe.throw(frappe._("Something went wrong while fetching time slots. Please try again later."))
-    except Exception:
-        frappe.log_error()
-        return None
+    except Exception as e:
+        frappe.log_error(f"Error in _get_time_slots_for_day: {str(e)}")
+        # Return proper response instead of None
+        return {
+            "all_available_slots_for_data": [],
+            "date": date,
+            "duration": appointment_group.duration_for_event if hasattr(appointment_group, 'duration_for_event') else 0,
+            "appointment_group_id": appointment_group.name if hasattr(appointment_group, 'name') else "",
+            "starttime": None,
+            "endtime": None,
+            "total_slots_for_day": 0,
+            "valid_start_date": None,
+            "valid_end_date": None,
+            "next_valid_date": date,
+            "prev_valid_date": date,
+            "available_days": [],
+            "is_invalid_date": True,
+        }
 
 
 def get_user_time_slots(all_time_slots_global_object: list, date: str, user_timezone_offset: str):
@@ -262,6 +277,15 @@ def _get_time_slots_for_given_date(appointment_group: object, datetime: datetime
         )
 
     all_slots = update_cal_slots_with_events(all_slots, booking_frequency_reached_obj["events"])
+    
+    # Merge Frappe Events to block slots
+    if booking_frequency_reached_obj["events"]:
+        from frappe_appointment.helpers.utils import convert_datetime_to_utc
+        for event in booking_frequency_reached_obj["events"]:
+            all_slots.append({
+                "starts_on": convert_datetime_to_utc(event["starts_on"]),
+                "ends_on": convert_datetime_to_utc(event["ends_on"])
+            })
 
     avaiable_time_slot_for_day = get_avaiable_time_slot_for_day(all_slots, starttime, endtime, appointment_group)
 
