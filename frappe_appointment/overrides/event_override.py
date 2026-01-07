@@ -650,7 +650,18 @@ def _create_event_for_appointment_group(
         return frappe.throw(webhook_call["message"])
 
     event.flags.ignore_links = True
-    event.insert(ignore_permissions=True)
+    
+    # Temporarily switch to Administrator to bypass permission checks in hooks (e.g. mbw_mia)
+    # especially for Guest users booking appointments.
+    current_user = frappe.session.user
+    if current_user == "Guest":
+        frappe.set_user("Administrator")
+    
+    try:
+        event.insert(ignore_permissions=True)
+    finally:
+        if current_user == "Guest":
+            frappe.set_user(current_user)
 
     # nosemgrep
     frappe.db.commit()
