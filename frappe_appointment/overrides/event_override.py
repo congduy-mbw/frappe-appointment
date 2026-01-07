@@ -649,6 +649,7 @@ def _create_event_for_appointment_group(
     if not webhook_call["status"]:
         return frappe.throw(webhook_call["message"])
 
+    event.flags.ignore_links = True
     event.insert(ignore_permissions=True)
 
     # nosemgrep
